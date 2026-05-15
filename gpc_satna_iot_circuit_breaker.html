@@ -1,0 +1,171 @@
+
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; font-family: var(--font-sans); }
+  .screen { display: none; }
+  .screen.active { display: flex; flex-direction: column; align-items: center; min-height: 500px; }
+  .top-bar { width: 100%; background: #0f3460; color: white; text-align: center; padding: 14px 0 10px; }
+  .top-bar h1 { font-size: 22px; font-weight: 500; letter-spacing: 1px; }
+  .top-bar p { font-size: 13px; opacity: 0.8; margin-top: 2px; }
+  .login-box { margin: 30px auto; background: var(--color-background-primary); border: 0.5px solid var(--color-border-tertiary); border-radius: var(--border-radius-lg); padding: 28px 32px; width: 320px; }
+  .login-box h2 { font-size: 17px; font-weight: 500; color: var(--color-text-primary); margin-bottom: 18px; text-align: center; }
+  .field { margin-bottom: 14px; }
+  .field label { font-size: 13px; color: var(--color-text-secondary); display: block; margin-bottom: 5px; }
+  .field select, .field input { width: 100%; padding: 9px 12px; border: 0.5px solid var(--color-border-secondary); border-radius: var(--border-radius-md); font-size: 14px; background: var(--color-background-primary); color: var(--color-text-primary); }
+  .login-btn { width: 100%; padding: 10px; background: #0f3460; color: white; border: none; border-radius: var(--border-radius-md); font-size: 15px; cursor: pointer; margin-top: 6px; }
+  .login-btn:hover { background: #1a4a7a; }
+  .err { color: var(--color-text-danger); font-size: 13px; text-align: center; margin-top: 8px; min-height: 18px; }
+  .panel { width: 100%; max-width: 420px; margin: 20px auto; padding: 0 12px; }
+  .panel-card { background: var(--color-background-primary); border: 0.5px solid var(--color-border-tertiary); border-radius: var(--border-radius-lg); overflow: hidden; }
+  .panel-header { background: #0f3460; color: white; text-align: center; padding: 12px; }
+  .panel-header h2 { font-size: 18px; font-weight: 500; letter-spacing: 2px; }
+  .panel-subheader { background: #1a4a7a; color: #cde; text-align: center; padding: 6px; font-size: 12px; letter-spacing: 1px; }
+  .user-badge { background: var(--color-background-secondary); padding: 8px 16px; display: flex; justify-content: space-between; align-items: center; font-size: 13px; color: var(--color-text-secondary); }
+  .logout-btn { font-size: 12px; color: #e94560; cursor: pointer; border: 0.5px solid #e94560; padding: 3px 10px; border-radius: var(--border-radius-md); background: none; }
+  .cb-display { padding: 16px; text-align: center; }
+  .cb-status-box { border: 0.5px solid var(--color-border-tertiary); border-radius: var(--border-radius-md); padding: 12px; margin-bottom: 14px; background: var(--color-background-secondary); }
+  .cb-label { font-size: 12px; color: var(--color-text-secondary); letter-spacing: 1px; margin-bottom: 6px; }
+  .cb-state { font-size: 26px; font-weight: 500; }
+  .cb-on { color: #27ae60; }
+  .cb-off { color: #e94560; }
+  .keypad { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin: 14px 0; }
+  .key { background: var(--color-background-secondary); border: 0.5px solid var(--color-border-secondary); border-radius: var(--border-radius-md); padding: 12px 6px; text-align: center; font-size: 18px; font-weight: 500; cursor: pointer; color: var(--color-text-primary); }
+  .key:hover { background: #0f3460; color: white; }
+  .key:active { transform: scale(0.96); }
+  .key.wide { grid-column: span 3; font-size: 14px; }
+  .pin-display { background: var(--color-background-secondary); border: 0.5px solid var(--color-border-tertiary); border-radius: var(--border-radius-md); padding: 10px 14px; text-align: right; font-size: 22px; letter-spacing: 6px; color: var(--color-text-primary); margin-bottom: 10px; min-height: 46px; }
+  .toggle-row { display: flex; gap: 8px; margin-top: 4px; }
+  .toggle-btn { flex: 1; padding: 11px; border-radius: var(--border-radius-md); border: none; font-size: 15px; cursor: pointer; font-weight: 500; }
+  .btn-on { background: #27ae60; color: white; }
+  .btn-off { background: #e94560; color: white; }
+  .btn-on:hover { background: #219a52; }
+  .btn-off:hover { background: #c0392b; }
+  .iot-label { font-size: 11px; color: var(--color-text-tertiary); letter-spacing: 1px; text-align: center; padding: 8px; border-top: 0.5px solid var(--color-border-tertiary); }
+</style>
+
+<div id="loginScreen" class="screen active">
+  <div class="top-bar">
+    <h1>GPC Satna</h1>
+    <p>Government Polytechnic College, Satna</p>
+  </div>
+  <div class="login-box">
+    <h2><i class="ti ti-lock" aria-hidden="true" style="font-size:18px;margin-right:6px;"></i>IoT Circuit Breaker Login</h2>
+    <div class="field">
+      <label>Select User</label>
+      <select id="userSelect">
+        <option value="">-- Select --</option>
+        <option value="GPC_Head">GPC_Head</option>
+        <option value="GPC_Engineer">GPC_Engineer</option>
+      </select>
+    </div>
+    <div class="field">
+      <label>Password</label>
+      <input type="password" id="passInput" placeholder="Enter password" />
+    </div>
+    <button class="login-btn" onclick="doLogin()">Login</button>
+    <div class="err" id="errMsg"></div>
+  </div>
+</div>
+
+<div id="panelScreen" class="screen">
+  <div class="top-bar">
+    <h1>GPC Satna</h1>
+    <p>IoT Based Circuit Breaker</p>
+  </div>
+  <div class="panel">
+    <div class="panel-card">
+      <div class="panel-header"><h2>GPC</h2></div>
+      <div class="panel-subheader">IoT Based Password Protected Circuit Breaker</div>
+      <div class="user-badge">
+        <span id="loggedUser" style="color:var(--color-text-primary);font-weight:500;"></span>
+        <button class="logout-btn" onclick="doLogout()">Logout</button>
+      </div>
+      <div class="cb-display">
+        <div class="cb-status-box">
+          <div class="cb-label">Circuit Breaker Status</div>
+          <div class="cb-state" id="cbState">OFF</div>
+        </div>
+        <div class="pin-display" id="pinDisplay">____</div>
+        <div class="keypad">
+          <div class="key" onclick="pressKey('1')">1</div>
+          <div class="key" onclick="pressKey('2')">2</div>
+          <div class="key" onclick="pressKey('3')">3</div>
+          <div class="key" onclick="pressKey('4')">4</div>
+          <div class="key" onclick="pressKey('5')">5</div>
+          <div class="key" onclick="pressKey('6')">6</div>
+          <div class="key" onclick="pressKey('7')">7</div>
+          <div class="key" onclick="pressKey('8')">8</div>
+          <div class="key" onclick="pressKey('9')">9</div>
+          <div class="key" onclick="clearPin()">CLR</div>
+          <div class="key" onclick="pressKey('0')">0</div>
+          <div class="key" onclick="backspace()"><i class="ti ti-backspace" aria-hidden="true"></i></div>
+        </div>
+        <div class="toggle-row">
+          <button class="toggle-btn btn-on" onclick="cbToggle(true)"><i class="ti ti-bolt" aria-hidden="true"></i> Turn ON</button>
+          <button class="toggle-btn btn-off" onclick="cbToggle(false)"><i class="ti ti-bolt-off" aria-hidden="true"></i> Turn OFF</button>
+        </div>
+        <div class="err" id="cbErr"></div>
+      </div>
+      <div class="iot-label">IoT Circuit Breaker Panel &bull; GPC Satna</div>
+    </div>
+  </div>
+</div>
+
+<script>
+  const users = { GPC_Head: 'gpc@123', GPC_Engineer: 'gpc@456' };
+  let pin = '';
+  let cbOn = false;
+
+  function doLogin() {
+    const u = document.getElementById('userSelect').value;
+    const p = document.getElementById('passInput').value;
+    if (!u) { document.getElementById('errMsg').textContent = 'Please select a user.'; return; }
+    if (!p) { document.getElementById('errMsg').textContent = 'Please enter password.'; return; }
+    if (users[u] === p) {
+      document.getElementById('loginScreen').classList.remove('active');
+      document.getElementById('panelScreen').classList.add('active');
+      document.getElementById('loggedUser').textContent = u;
+      document.getElementById('errMsg').textContent = '';
+    } else {
+      document.getElementById('errMsg').textContent = 'Wrong password! Try again.';
+    }
+  }
+
+  document.getElementById('passInput').addEventListener('keydown', function(e) {
+    if (e.key === 'Enter') doLogin();
+  });
+
+  function doLogout() {
+    document.getElementById('panelScreen').classList.remove('active');
+    document.getElementById('loginScreen').classList.add('active');
+    document.getElementById('userSelect').value = '';
+    document.getElementById('passInput').value = '';
+    pin = '';
+    updatePinDisplay();
+  }
+
+  function pressKey(k) {
+    if (pin.length < 4) { pin += k; updatePinDisplay(); }
+  }
+
+  function clearPin() { pin = ''; updatePinDisplay(); }
+  function backspace() { pin = pin.slice(0, -1); updatePinDisplay(); }
+
+  function updatePinDisplay() {
+    const d = document.getElementById('pinDisplay');
+    let show = '';
+    for (let i = 0; i < 4; i++) show += (i < pin.length ? '*' : '_');
+    d.textContent = show;
+  }
+
+  function cbToggle(turnOn) {
+    const cbErr = document.getElementById('cbErr');
+    if (pin.length < 4) { cbErr.textContent = 'Enter 4-digit PIN first.'; return; }
+    cbOn = turnOn;
+    const el = document.getElementById('cbState');
+    el.textContent = cbOn ? 'ON' : 'OFF';
+    el.className = 'cb-state ' + (cbOn ? 'cb-on' : 'cb-off');
+    cbErr.textContent = '';
+    pin = '';
+    updatePinDisplay();
+  }
+</script>
