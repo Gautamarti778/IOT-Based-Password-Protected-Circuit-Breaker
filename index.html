@@ -1,4 +1,13 @@
 
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>IOT Based Circuit Breaker</title>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+</head>
 <style>
   * { box-sizing: border-box; margin: 0; padding: 0; font-family: var(--font-sans); }
   .screen { display: none; }
@@ -154,18 +163,37 @@
     const d = document.getElementById('pinDisplay');
     let show = '';
     for (let i = 0; i < 4; i++) show += (i < pin.length ? '*' : '_');
-    d.textContent = show;
-  }
-
-  function cbToggle(turnOn) {
+    d.textContent = show;function cbToggle(turnOn) {
     const cbErr = document.getElementById('cbErr');
-    if (pin.length < 4) { cbErr.textContent = 'Enter 4-digit PIN first.'; return; }
-    cbOn = turnOn;
-    const el = document.getElementById('cbState');
-    el.textContent = cbOn ? 'ON' : 'OFF';
-    el.className = 'cb-state ' + (cbOn ? 'cb-on' : 'cb-off');
     cbErr.textContent = '';
     pin = '';
     updatePinDisplay();
+    db.ref("/circuit_breaker").update({
+      state: turnOn,
+      status: turnOn ? "ON" : "OFF"
+    });
   }
-</script>
+</script>const firebaseConfig = {
+    apiKey: "AIzaSyDC7SaQCdei_UwBoWDr0jZxTMzDS0Zr3MI",
+    authDomain: "iot-based--circuit-breaker.firebaseapp.com",
+    databaseURL: "https://iot-based--circuit-breaker-default-rtdb.firebaseio.com",
+    projectId: "iot-based--circuit-breaker",
+    storageBucket: "iot-based--circuit-breaker.firebasestorage.app",
+    messagingSenderId: "967900260334",
+    appId: "1:967900260334:web:752af25bdd960651f310ff"
+  };
+  firebase.initializeApp(firebaseConfig);
+  const db = firebase.database();
+
+  db.ref("/circuit_breaker/status").on("value", (snap) => {
+    const status = snap.val();
+    if (!status) return;
+    const cbEl = document.getElementById("cbState");
+    if (cbEl) {
+      cbEl.textContent = status;
+      cbEl.className = "cb-state " + (status === "ON" ? "cb-on" : "cb-off");
+    }
+  });
+</body>
+
+ 
